@@ -1,16 +1,19 @@
 import getopt
 import sys
-import requests
 from enum import Enum
 
-TWELVE_CLOCK = 0
-TWENTY_FOUR_CLOCK = 1
-DATE_CLOCK = 2
-MINUTE_COUNTDOWN = 3
-DAY_COUNTDOWN = 4
-MINUTE_TIMER = 5
-SECOND_TIMER = 6
-TIMEZONE = 7
+import requests
+
+
+class FuncEnum(Enum):
+    TWELVE_CLOCK = 0
+    TWENTY_FOUR_CLOCK = 1
+    DATE_CLOCK = 2
+    MINUTE_COUNTDOWN = 3
+    DAY_COUNTDOWN = 4
+    MINUTE_TIMER = 5
+    SECOND_TIMER = 6
+    TIMEZONE = 7
 
 
 class MenuEnum(Enum):
@@ -27,14 +30,6 @@ def print_choose_function():
 
 
 def print_functions():
-    # // 0 - 12 Hour Clock -
-    # // 1 - 24 Hour Clock -
-    # // 2 - Date -
-    # // 3 - HourMin Countdown - offset in minutes
-    # // 4 - Day Countdown  - offset
-    # // 5 - HourMin timer - offset in minutes
-    # // 6 - MinSec Timer - offset in seconds
-    # // 7 - Alt Timezone - offset in minutes
     print("\t 0 - 12 Hour Clock")
     print("\t 1 - 24 Hour Clock")
     print("\t 2 - Date")
@@ -47,17 +42,18 @@ def print_functions():
 
 def get_parameter(func):
 
+    func_code = FuncEnum(func)
     user_input = ""
 
-    if func == MINUTE_COUNTDOWN:
+    if func_code == FuncEnum.MINUTE_COUNTDOWN:
         user_input = input(" How many minutes for the countdown: ")
-    elif func == DAY_COUNTDOWN:
+    elif func_code == FuncEnum.DAY_COUNTDOWN:
         user_input = input(" Ordinal number of the day to count down to: ")
-    elif func == MINUTE_TIMER:
+    elif func_code == FuncEnum.MINUTE_TIMER:
         user_input = input(" How many minutes for the timer: ")
-    elif func == SECOND_TIMER:
+    elif func_code == FuncEnum.SECOND_TIMER:
         user_input = input(" How many seconds for the timer: ")
-    elif func == TIMEZONE:
+    elif func_code == FuncEnum.TIMEZONE:
         user_input = input(" How many minutes offset for the timezone: ")
 
     return user_input
@@ -86,13 +82,14 @@ def get_menu_option():
 
 
 def build_command(func, dc, red, green, blue, offset):
-    # static const uint8_t FunctionCodeIndex = 0;
-    # static const uint8_t DutyCycleIndex = 1;
-    # static const uint8_t ParameterHigh = 2;
-    # static const uint8_t ParamterLow = 3;
-    # static const uint8_t RGB_Red = 4;
-    # static const uint8_t RGB_Green = 5;
-    # static const uint8_t RGB_Blue = 6;
+    # From server code:
+    #  FunctionCodeIndex = 0;
+    #  DutyCycleIndex = 1;
+    #  ParameterHigh = 2;
+    #  ParameterLow = 3;
+    #  RGB_Red = 4;
+    #  RGB_Green = 5;
+    #  RGB_Blue = 6;
 
     if offset == "":
         offset = "0"
@@ -103,9 +100,11 @@ def build_command(func, dc, red, green, blue, offset):
 
 
 def get_one_user_command():
+
     # Print menu to user
     print_choose_function()
     function_choice = int(input("> "))
+
     # user selects
 
     # ask parameters
@@ -119,7 +118,7 @@ def get_one_user_command():
     # color
     r, g, b = get_colors()
 
-    # build command and enqueue
+    # build command
     return build_command(function_choice, duty_cycle, r, g, b, parameter)
 
 
@@ -153,6 +152,13 @@ def get_command_bytes(cmd_list):
     return bytes(body_bytes)
 
 
+def send_commands(web_address, command_bytes):
+    headers = {'Content-Type': 'application/octet-stream'}
+    response = requests.post(web_address, data=command_bytes, headers=headers)
+
+    print("\n", response.status_code)
+
+
 ###############################################################################
 ###############################################################################
 # get URL from args
@@ -169,19 +175,9 @@ except getopt.GetoptError:
 
 for o, a in opts:
     if o == "-h":
-        print("clockConfig.py -a <URL>")
+        print("clockConfig.py -a http://<URL>")
         sys.exit()
     elif o in ("-a", "--address"):
         URL = a
 
-cmd = get_command_bytes(get_user_commands())
-
-
-# send or add more
-
-headers = {'Content-Type': 'application/octet-stream'}
-response = requests.post(URL, data=cmd, headers=headers)
-
-print("\n", response.status_code)
-
-
+send_commands(URL, get_command_bytes(get_user_commands()))
