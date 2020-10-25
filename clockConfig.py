@@ -44,13 +44,13 @@ def get_parameter(func):
     user_input = ""
 
     if func_code == FuncEnum.MINUTE_COUNTDOWN:
-        user_input = input(" How many minutes for the countdown: ")
+        user_input = input(" Ordinal number of minutes to count down to (1,440 minutes in a day): ")
     elif func_code == FuncEnum.DAY_COUNTDOWN:
         user_input = input(" Ordinal number of the day to count down to: ")
     elif func_code == FuncEnum.MINUTE_TIMER:
-        user_input = input(" How many minutes for the timer: ")
+        user_input = input(" How many minutes from now to start the timer (O for now): ")
     elif func_code == FuncEnum.SECOND_TIMER:
-        user_input = input(" How many seconds for the timer: ")
+        user_input = input(" How many seconds from now to start the timer (O for now): ")
     elif func_code == FuncEnum.TIMEZONE:
         user_input = input(" How many minutes offset for the timezone: ")
 
@@ -100,7 +100,7 @@ def build_command(func, dc, red, green, blue, offset):
 def get_one_user_command():
 
     # Print menu to user
-    function_choice = get_function_choice
+    function_choice = get_function_choice()
 
     # user selects
 
