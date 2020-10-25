@@ -24,12 +24,8 @@ class MenuEnum(Enum):
     QUIT = 4
 
 
-def print_choose_function():
+def get_function_choice():
     print("Choose Function:")
-    print_functions()
-
-
-def print_functions():
     print("\t 0 - 12 Hour Clock")
     print("\t 1 - 24 Hour Clock")
     print("\t 2 - Date")
@@ -38,6 +34,8 @@ def print_functions():
     print("\t 5 - Hour Minute Timer")
     print("\t 6 - Minute Second Timer")
     print("\t 7 - Alternate Timezone")
+
+    return int(input("> "))
 
 
 def get_parameter(func):
@@ -102,8 +100,7 @@ def build_command(func, dc, red, green, blue, offset):
 def get_one_user_command():
 
     # Print menu to user
-    print_choose_function()
-    function_choice = int(input("> "))
+    function_choice = get_function_choice
 
     # user selects
 
