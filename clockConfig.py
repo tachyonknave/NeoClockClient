@@ -76,7 +76,7 @@ def get_menu_option():
     print("\t3 - Send Command")
     print("\t4 - Quit")
 
-    return int(input(" >"))
+    return int(input("> "))
 
 
 def build_command(func, dc, red, green, blue, offset):
@@ -167,7 +167,7 @@ URL = ""
 try:
     opts, args = getopt.getopt(sys.argv[1:], "ha:", ["help", "address="])
 except getopt.GetoptError:
-    print("clockConfig.py -a <URL>")
+    print("clockConfig.py -a http://<URL>")
     sys.exit(2)
 
 for o, a in opts:
